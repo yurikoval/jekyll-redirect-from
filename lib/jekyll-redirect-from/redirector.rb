@@ -11,8 +11,8 @@ module JekyllRedirectFrom
 
     def generate_alt_urls(site, list)
       list.each do |item|
-        if has_alt_urls?(item)
-          alt_urls(item).each do |alt_url|
+        if has_alt_urls?(site, item)
+          alt_urls(site, item).each do |alt_url|
             redirect_page = RedirectPage.new(site, site.source, "", "redirect.html")
             redirect_page.data['permalink'] = alt_url
             redirect_page.data['sitemap'] = false
@@ -44,14 +44,31 @@ module JekyllRedirectFrom
           page_or_post.is_a?(Jekyll::Post))
     end
 
-    def has_alt_urls?(page_or_post)
+    def has_alt_urls?(site, page_or_post)
       is_dynamic_document?(page_or_post) &&
-        page_or_post.data.has_key?('redirect_from') &&
-        !alt_urls(page_or_post).empty?
+        (page_or_post.data.has_key?('redirect_from') || !alt_urls(site, page_or_post).empty?)
     end
 
-    def alt_urls(page_or_post)
-      Array[page_or_post.data['redirect_from']].flatten.compact
+    def alt_urls(site, page_or_post)
+      Array[page_or_post.data['redirect_from'], bulk_redirect_urls(site, page_or_post)].flatten.compact
+    end
+
+    def bulk_redirect_urls(site, page_or_post)
+      return unless redirect_from_config = site.config.fetch('jekyll-redirect-from', nil)
+      if bulk_redirect_urls = redirect_from_config.fetch('bulk_redirect_urls', nil)
+        item_type = case page_or_post
+          when Jekyll::Post then 'post'
+          when Jekyll::Page then 'page'
+          when Jekyll::Document then 'document'
+        end
+        bulk_redirect_urls.fetch(item_type, []).map do |redirect_url|
+          Jekyll::URL.new({
+            template: redirect_url,
+            placeholders: page_or_post.url_placeholders,
+            permalink: nil,
+          }).to_s
+        end
+      end
     end
 
     def has_redirect_to_url?(page_or_post)

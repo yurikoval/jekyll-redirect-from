@@ -26,6 +26,13 @@ RSpec.configure do |config|
       "collections" => {
         "articles" => {"output" => true},
         "authors"  => {}
+      },
+      "jekyll-redirect-from" => {
+        "bulk_redirect_urls" => {
+          "post" => ['/blog/:year/:month/:day/:title.html'],
+          "page" => ['/blog/:basename.html'],
+          "document" => ['/blog/:name.html'],
+        }
       }
     }))
 

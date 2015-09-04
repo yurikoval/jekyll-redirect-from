@@ -99,6 +99,23 @@ title: My other awesome post
 redirect_from: /post/123456798/
 ```
 
+### Bulk Redirects
+
+If you want to redirect all posts or all pages to another location, you can use bulk redirect.
+To migrate your site from a subdomain `blog.example.com` to a directory on another domain `www.example.com/blog/`, set the following in your `_config.yml` file:
+
+```yaml
+
+jekyll-redirect-from:
+  bulk_redirect_urls:
+    post:
+      - '/blog/:year/:month/:title/'
+    page:
+      - '/blog/:basename.html'
+    document:
+      - '/blog/:name.html'
+```
+
 ### Prefix
 If `site.baseurl` is set, its value is used as a prefix for the redirect url automatically.
 This is useful for scenarios where a site isn't available from the domain root, so the redirects point to the correct path.

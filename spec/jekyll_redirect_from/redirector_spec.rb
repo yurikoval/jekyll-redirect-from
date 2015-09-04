@@ -14,12 +14,12 @@ describe JekyllRedirectFrom::Redirector do
     if JekyllRedirectFrom.jekyll_3?
       skip "Don't need to test posts in Jekyll 3"
     else
-      expect(redirector.has_alt_urls?(post_to_redirect)).to be_truthy
+      expect(redirector.has_alt_urls?(@site, post_to_redirect)).to be_truthy
     end
   end
 
   it "knows if a document is requesting a redirect page" do
-    expect(redirector.has_alt_urls?(doc_to_redirect_from)).to be_truthy
+    expect(redirector.has_alt_urls?(@site, doc_to_redirect_from)).to be_truthy
   end
 
   it "knows if a document is requesting a redirect away" do
@@ -27,11 +27,11 @@ describe JekyllRedirectFrom::Redirector do
   end
 
   it "handles one redirect path" do
-    expect(redirector.alt_urls(page_with_one)).to eql(["mencius/was/my/father"])
+    expect(redirector.alt_urls(@site, page_with_one)).to eql(["mencius/was/my/father", "/blog/one_redirect_url.html"])
   end
 
   it "handles many redirect paths" do
-    expect(redirector.alt_urls(page_with_many)).to eql(["help", "contact", "let-there/be/light-he-said", "/geepers/mccreepin"])
+    expect(redirector.alt_urls(@site, page_with_many)).to eql(["help", "contact", "let-there/be/light-he-said", "/geepers/mccreepin", "/blog/multiple_redirect_urls.html"])
   end
 
   it "handles a single redirect_to url" do
